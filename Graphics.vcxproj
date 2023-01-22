@@ -173,6 +173,9 @@
     <ClInclude Include="src\Graphics\TextureAtlas.h" />
     <ClInclude Include="src\Graphics\TextureRenderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
