@@ -523,6 +523,14 @@ namespace Graphics {
 		PrintInternal(std::to_string(value), x, y, scale, rotation, -1, red, green, blue);
 	}
 
+	void Print(bool value, float x, float y, float scale, float rotation, float red, float green, float blue)
+	{
+		if (value)
+			PrintInternal("True", x, y, scale, rotation, -1, red, green, blue);
+		else
+			PrintInternal("False", x, y, scale, rotation, -1, red, green, blue);
+	}
+
 	void Print(int value, float x, float y, float scale, float rotation, float red, float green, float blue)
 	{
 		PrintInternal(std::to_string(value), x, y, scale, rotation, -1, red, green, blue);

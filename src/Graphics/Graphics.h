@@ -111,27 +111,30 @@ namespace Graphics {
 	// ! Print function overloads
 
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	void Print(short value, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	void Print(int value, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
+	void Print(bool value, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	// Print to screen, starting from (x, y)
+	// rotation in radians
 	void Print(long value, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	// digitTruncate controls how many digits after the decimal are drawn, set -1 for no truncation
 	void Print(float value, float x, float y, float scale = 1.f, float rotation = 0.f, int digitTruncate = -1, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	// digitTruncate controls how many digits after the decimal are drawn, set -1 for no truncation
 	void Print(double value, float x, float y, float scale = 1.f, float rotation = 0.f, int digitTruncate = -1, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	void Print(const char* text, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	// Print to screen, starting from (x, y)
-	// rotation in rotation in radians
+	// rotation in radians
 	void Print(std::string text, float x, float y, float scale = 1.f, float rotation = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 
 	// ! Image rendering
