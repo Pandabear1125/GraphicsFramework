@@ -56,6 +56,12 @@ namespace Graphics {
 		// read from font files and assemble Data values
 		std::ifstream fin;
 		fin.open(fontDataPath);
+		if (fin.fail())
+		{
+			std::cout << "Error: Font data path at " << fontDataPath << " not found!" << std::endl;
+			__debugbreak();
+		}
+
 		std::string line;
 		std::string output[5];
 		std::string suboutput[5];
