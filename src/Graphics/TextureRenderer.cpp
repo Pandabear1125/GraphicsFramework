@@ -79,7 +79,90 @@ void TextureRenderer::Draw(TextureAtlas* atlas, unsigned int atlasIndex, float x
 	Draw(atlas, quad, x, y, width, height, rotation, rotationOffsetX, rotationOffsetY, red, green, blue);
 }
 
-void TextureRenderer::CompileStatic(StaticRenderContainer& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
+void TextureRenderer::Draw(TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
+{
+	// get the textureID to be added to the vertex data
+	float textureID = (float)atlas->GetID();
+
+	// get the texture quad
+	glm::vec4 quad = calculatedQuad;
+
+	// assemble the vertex data
+	float vertices[VERTEX_FLOAT_COUNT] = {
+		//	|x|					|y|						|u|															|v|																	 |color|					|tex unit|	
+			x - width / 2, y - height / 2,	(quad.x) / atlas->GetTextureWidth(),	(quad.y) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 0 : top left
+			x + width / 2, y - height / 2,	(quad.x + quad.z) / atlas->GetTextureWidth(),	(quad.y) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 1 : top right
+			x - width / 2, y + height / 2,	(quad.x) / atlas->GetTextureWidth(),	(quad.y + quad.w) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 2 : bottom left
+			x + width / 2, y + height / 2,	(quad.x + quad.z) / atlas->GetTextureWidth(),	(quad.y + quad.w) / atlas->GetTextureHeight(),	 red, green, blue,	textureID		// 3 : bottom right
+	};
+
+	// rotate vertex data if rotation is provided
+	if (rotation != 0.f)
+	{
+		float cosX = cosf(rotation);
+		float sinX = sinf(rotation);
+
+		// rotate vertices
+		for (int i = 0; i < VERTEX_FLOAT_COUNT; i += 8)
+		{
+			float origX = vertices[i];
+			float origY = vertices[i + 1];
+			vertices[i] = cosX * (origX - x - rotationOffsetX) - sinX * (origY - y - rotationOffsetY) + x + rotationOffsetX;
+			vertices[i + 1] = sinX * (origX - x - rotationOffsetX) + cosX * (origY - y - rotationOffsetY) + y + rotationOffsetY;
+		}
+	}
+
+	// assemble the indices
+	unsigned int indices[INDEX_UINT_COUNT] = {
+		0, 1, 3,		// top right triangle
+		3, 2, 0		// bottom left triangle
+	};
+
+	// call resize on the vectors if vectors are about to overflow
+	TryToResize(10);
+
+	// store the vertex data
+	for (int i = 0; i < VERTEX_FLOAT_COUNT; i++)
+	{
+		m_VertexData[m_DrawCount * VERTEX_FLOAT_COUNT + i] = vertices[i];
+	}
+
+	// store the index data
+	for (int i = 0; i < INDEX_UINT_COUNT; i++)
+	{
+		m_IndexData[m_DrawCount * INDEX_UINT_COUNT + i] = indices[i] + (m_DrawCount * VERTICES_PER_QUAD);
+	}
+
+	m_DrawCount++;
+}
+
+void TextureRenderer::Draw(CompiledRenderData& container)
+{
+	// store the previous value of draw count for use in index adding
+	int OriginalDrawCount = m_DrawCount;
+
+	for (unsigned int j = 0; j < container.Count; j++)
+	{
+		// call resize on the vectors if vectors are about to overflow
+		TryToResize(10);
+
+		// store the vertex data
+		for (int i = 0; i < VERTEX_FLOAT_COUNT; i++)
+		{
+			m_VertexData[m_DrawCount * VERTEX_FLOAT_COUNT + i] = container.Vertices[i + VERTEX_FLOAT_COUNT * j];
+		}
+
+		// store the index data
+		for (int i = 0; i < INDEX_UINT_COUNT; i++)
+		{	// original draw count used since CompiledRenderData starts its indices at 0, and renderer starts at whatever original value * INDEX_UINT_COUNT is
+			m_IndexData[m_DrawCount * INDEX_UINT_COUNT + i] = container.Indices[i + INDEX_UINT_COUNT * j] + (OriginalDrawCount * VERTICES_PER_QUAD);
+		}
+
+		m_DrawCount++;
+	}
+}
+
+void TextureRenderer::CompileStatic(CompiledRenderData& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
 {
 	// get the textureID to be added to the vertex data
 	float textureID = (float)atlas->GetID();
@@ -140,67 +223,10 @@ void TextureRenderer::CompileStatic(StaticRenderContainer& container, TextureAtl
 	container.Count++;
 }
 
-void TextureRenderer::CompileStatic(StaticRenderContainer& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
+void TextureRenderer::CompileStatic(CompiledRenderData& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
 {
 	glm::vec4 quad = atlas->GetQuad(index);
 	CompileStatic(container, atlas, quad, x, y, width, height, rotation, rotationOffsetX, rotationOffsetY, red, green, blue);
-}
-
-void TextureRenderer::Draw(TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
-{
-	// get the textureID to be added to the vertex data
-	float textureID = (float)atlas->GetID();
-
-	// get the texture quad
-	glm::vec4 quad = calculatedQuad;
-
-	// assemble the vertex data
-	float vertices[VERTEX_FLOAT_COUNT] = {
-	//	|x|					|y|						|u|															|v|																	 |color|					|tex unit|	
-		x - width / 2, y - height / 2,	(quad.x			 )	/ atlas->GetTextureWidth(),	(quad.y			 ) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 0 : top left
-		x + width / 2, y - height / 2,	(quad.x + quad.z) / atlas->GetTextureWidth(),	(quad.y			 ) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 1 : top right
-		x - width / 2, y + height / 2,	(quad.x			 )	/ atlas->GetTextureWidth(),	(quad.y + quad.w) / atlas->GetTextureHeight(),	 red, green, blue,	textureID,		// 2 : bottom left
-		x + width / 2, y + height / 2,	(quad.x + quad.z) / atlas->GetTextureWidth(),	(quad.y + quad.w) / atlas->GetTextureHeight(),	 red, green, blue,	textureID		// 3 : bottom right
-	};
-	
-	// rotate vertex data if rotation is provided
-	if (rotation != 0.f)
-	{
-		float cosX = cosf(rotation);
-		float sinX = sinf(rotation);
-
-		// rotate vertices
-		for (int i = 0; i < VERTEX_FLOAT_COUNT; i += 8)
-		{
-			float origX = vertices[i];
-			float origY = vertices[i + 1];
-			vertices[i] = cosX * (origX - x - rotationOffsetX) - sinX * (origY - y - rotationOffsetY) + x + rotationOffsetX;
-			vertices[i + 1] = sinX * (origX - x - rotationOffsetX) + cosX * (origY - y - rotationOffsetY) + y + rotationOffsetY;
-		}
-	}
-
-	// assemble the indices
-	unsigned int indices[INDEX_UINT_COUNT] = {
-		0, 1, 3,		// top right triangle
-		3, 2, 0		// bottom left triangle
-	};
-
-	// call resize on the vectors if vectors are about to overflow
-	TryToResize(10);
-
-	// store the vertex data
-	for (int i = 0; i < VERTEX_FLOAT_COUNT; i++)
-	{
-		m_VertexData[m_DrawCount * VERTEX_FLOAT_COUNT + i] = vertices[i];
-	}
-	
-	// store the index data
-	for (int i = 0; i < INDEX_UINT_COUNT; i++)
-	{
-		m_IndexData[m_DrawCount * INDEX_UINT_COUNT + i] = indices[i] + (m_DrawCount * VERTICES_PER_QUAD);
-	}
-
-	m_DrawCount++;
 }
 
 void TextureRenderer::ClearStaticData()
@@ -216,7 +242,7 @@ void TextureRenderer::ClearStaticData()
 	m_StaticCount = 0;
 }
 
-void TextureRenderer::LoadStaticData(StaticRenderContainer& container)
+void TextureRenderer::LoadStaticData(CompiledRenderData& container)
 {
 	m_StaticCount = container.Count;
 

@@ -11,25 +11,25 @@ const int INDEX_UINT_COUNT = 6;
 const int VERTICES_PER_QUAD = 4;
 
 
-struct StaticRenderContainer
+struct CompiledRenderData
 {
-	StaticRenderContainer() = default;
+	CompiledRenderData() = default;
 
-	StaticRenderContainer(int initialSize)
+	CompiledRenderData(int initialSize)
 	{
 		Vertices.resize(initialSize * VERTEX_FLOAT_COUNT);
 		Indices.resize(initialSize * INDEX_UINT_COUNT);
 		Capacity = initialSize;
 	}
 
-	StaticRenderContainer(std::vector<float> vertexVector, std::vector<unsigned int> indexVector, unsigned int count)
+	CompiledRenderData(std::vector<float> vertexVector, std::vector<unsigned int> indexVector, unsigned int count)
 	{
 		Vertices = vertexVector;
 		Indices = indexVector;
 		Count = count;
 	}
 
-	inline void Add(StaticRenderContainer& data)
+	inline void Add(CompiledRenderData& data)
 	{
 		int oldCount = Count;
 		Count += data.Count;
@@ -49,7 +49,7 @@ struct StaticRenderContainer
 		Capacity = Count;
 	}
 
-	void Set(StaticRenderContainer& data, unsigned int start)
+	void Set(CompiledRenderData& data, unsigned int start)
 	{
 		for (unsigned int i = 0; i < data.Count * VERTEX_FLOAT_COUNT; i++)
 		{
@@ -62,15 +62,15 @@ struct StaticRenderContainer
 		}
 	}
 
-	inline StaticRenderContainer operator+ (StaticRenderContainer b)
+	inline CompiledRenderData operator+ (CompiledRenderData b)
 	{
-		StaticRenderContainer c;
+		CompiledRenderData c;
 		c.Add(*(this));
 		c.Add(b);
 		return c;
 	}
 
-	inline void operator+= (StaticRenderContainer b)
+	inline void operator+= (CompiledRenderData b)
 	{
 		this->Add(b);
 	}
@@ -92,13 +92,15 @@ public:
 	// add an image to be drawn
 	void Draw(TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	void Draw(TextureAtlas* atlas, unsigned int atlasIndex, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	// adds all compiled draw data to the renderer
+	void Draw(CompiledRenderData& container);
 	
-	// add image data to a StaticRenderContainer to be drawn when loaded
-	void CompileStatic(StaticRenderContainer& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
-	void CompileStatic(StaticRenderContainer& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	// add image data to a CompiledRenderData to be drawn when loaded
+	void CompileStatic(CompiledRenderData& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	void CompileStatic(CompiledRenderData& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	
-	// load all draw data in a StaticRenderContainer to be drawn
-	void LoadStaticData(StaticRenderContainer& container);
+	// load all draw data in a CompiledRenderData to be drawn
+	void LoadStaticData(CompiledRenderData& container);
 	// clear any loaded static draw data
 	void ClearStaticData();
 

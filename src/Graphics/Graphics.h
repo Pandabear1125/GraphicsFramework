@@ -144,17 +144,18 @@ namespace Graphics {
 	// * the color input allows for color altering the image, the given values are multiplied to the sampled texture color
 	void Draw(TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 	void Draw(TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	void Draw(CompiledRenderData& container);
 
 	// Renderer final Draw call
 	// Renders all image 'Draw()' calls since the last Render() call
 	void Render();
 
-	// Compile a static image to be drawn, loads the quad into a StaticRenderContainer
-	void CompileStaticDrawData(StaticRenderContainer& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
-	void CompileStaticDrawData(StaticRenderContainer& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	// Compile a static image to be drawn, loads the quad into a CompiledRenderData
+	void CompileStaticDrawData(CompiledRenderData& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
+	void CompileStaticDrawData(CompiledRenderData& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation = 0.f, float rotationOffsetX = 0.f, float rotationOffsetY = 0.f, float red = 1.f, float green = 1.f, float blue = 1.f);
 
-	// Load data from a StaticRenderContainer to be drawn staticly
-	void LoadStaticDrawData(StaticRenderContainer& container);
+	// Load data from a CompiledRenderData to be drawn staticly
+	void LoadStaticDrawData(CompiledRenderData& container);
 
 	// Clear any static data stored in the TextureRenderer
 	void ClearStaticDrawData();

@@ -577,23 +577,28 @@ namespace Graphics {
 		Data.Renderer->Draw(atlas, calculatedQuad, x, y, width, height, rotation, rotationOffsetX, rotationOffsetY, red, green, blue);
 	}
 
+	void Draw(CompiledRenderData& container)
+	{
+		Data.Renderer->Draw(container);
+	}
+
 	void Render()
 	{
 		Data.Renderer->Render();
 	}
 
-	void CompileStaticDrawData(StaticRenderContainer& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
+	void CompileStaticDrawData(CompiledRenderData& container, TextureAtlas* atlas, glm::vec4 calculatedQuad, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
 	{
 		Data.Renderer->CompileStatic(container, atlas, calculatedQuad, x, y, width, height, rotation, rotationOffsetX, rotationOffsetY, red, green, blue);
 	}
 
-	void CompileStaticDrawData(StaticRenderContainer& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
+	void CompileStaticDrawData(CompiledRenderData& container, TextureAtlas* atlas, unsigned int index, float x, float y, float width, float height, float rotation, float rotationOffsetX, float rotationOffsetY, float red, float green, float blue)
 	{
 		glm::vec4 calculatedQuad = atlas->GetQuad(index);
 		Data.Renderer->CompileStatic(container, atlas, calculatedQuad, x, y, width, height, rotation, rotationOffsetX, rotationOffsetY, red, green, blue);
 	}
 
-	void LoadStaticDrawData(StaticRenderContainer& container)
+	void LoadStaticDrawData(CompiledRenderData& container)
 	{
 		Data.Renderer->LoadStaticData(container);
 	}
