@@ -11,6 +11,24 @@
 #include <sstream>
 #include <iostream>
 
+
+// in-code shader code constants
+enum ShaderType
+{
+	SHAPE,
+	TEXTURE_RENDERER
+};
+
+extern const char* SHADER_SHAPE_VERT;
+
+extern const char* SHADER_SHAPE_FRAG;
+
+extern const char* SHADER_TEXTURE_RENDER_VERT;
+
+extern const char* SHADER_TEXTURE_RENDER_FRAG;
+
+
+
 class UBO
 {
 public:
@@ -25,11 +43,14 @@ public:
 	unsigned int m_Size = 0;
 };
 
+
+
 class Shader
 {
 public:
 	Shader() = default;
 	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(ShaderType premadeType);
 	unsigned int getID();
 
 	void use();
